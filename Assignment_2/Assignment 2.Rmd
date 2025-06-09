@@ -1,0 +1,69 @@
+---
+title: "Assignment 2"
+author: "Jacob Aylward"
+date: "2025-06-09"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+
+
+```{r}
+library(readxl)
+library(dplyr)
+library(caret)
+library(class)
+```
+
+```{r}
+library(readxl)
+UniversalBank <- read_excel("C:/Users/jacob/Downloads/UniversalBank.xlsx")
+View(UniversalBank)
+```
+
+```{r}
+UniversalBank <- UniversalBank %>% select(-ID, -ZIPCode)
+```
+
+```{r}
+UniversalBank$Education <- as.factor(UniversalBank$Education)
+```
+
+```{r}
+dummy_model <- dummyVars("~.", data = UniversalBank)
+UniversalBank_dummy <- data.frame(predict(dummy_model, newdata = UniversalBank))
+```
+
+```{r}
+set.seed(123)
+train_index <- createDataPartition(UniversalBank_dummy$PersonalLoan, p = 0.6, list = FALSE)
+train_data <- UniversalBank_dummy[train_index, ]
+test_data <- UniversalBank_dummy[-train_index, ]
+```
+
+
+```{r}
+new_customer <- data.frame(
+  Age = 40,
+  Experience = 10,
+  Income = 84,
+  Family = 2,
+  CCAvg = 2,
+  Mortgage = 0,
+  Securities.Account = 0,
+  CD.Account = 0,
+  Online = 1,
+  CreditCard = 1,
+  Education_1 = 0,
+  Education_2 = 1,
+  Education_3 = 0
+)
+```
+
+
+# Tried running the Knn but was unsure / not confident in what to do next, I deeply apologize for not being able to complete the assignmet
+
+
+
