@@ -1,0 +1,109 @@
+---
+title: "Assignment 3"
+author: "Jacob Aylward"
+date: "2025-06-13"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+dir.create("images")
+```
+
+
+```{r}
+library(caret)
+```
+
+```{r}
+library(readr)
+Universal_Bank <- read_csv("C:/Users/jacob/Downloads/UniversalBank.csv")
+View(Universal_Bank)
+```
+
+```{r}
+set.seed(123)
+Index_Train <- createDataPartition(Universal_Bank$`Personal Loan`, p=0.6, list = FALSE)
+Train <- Universal_Bank[Index_Train,]
+Test <- Universal_Bank[Index_Train,]
+```
+
+
+```{r}
+pivot_table <- table(Train$CreditCard,Train$`Personal Loan`,Train$Online) # creating pivot table with CC and Personal Loan = Rows and Online = Column
+pivot_table  #Pivot Table 
+```
+
+```{r}
+loan_accepted <- pivot_table["1","1","1"]
+total_accepted <- sum(pivot_table["1" , ,"1"]) #Probability based on Credit Card and Online 
+probability <- loan_accepted / total_accepted
+probability
+```
+
+
+
+```{r}
+pivottable_loan_online <- table(Train$`Personal Loan`,Train$Online) #Pivot table with Personal Loan = Row and Online = Column
+pivottable_loan_online
+```
+
+```{r}
+pivottable_loan_cc <- table(Train$`Personal Loan`,Train$CreditCard) #Pivot table with Personal Loan = Row and Credit Card = Column
+pivottable_loan_cc
+
+```
+
+```{r}
+p1 <- sum(pivottable_loan_cc["1","1"]) / sum(pivottable_loan_cc["1",]) # P(CC = 1 Loan = 1)
+p1
+```
+
+```{r}
+p2 <- sum(pivottable_loan_online["1","1"]) / sum(pivottable_loan_online["1" ,]) # P(Online = 1  Loan = 1)
+p2
+```
+
+```{r}
+p3 <- sum(pivottable_loan_online["1" ,]) / sum(pivottable_loan_online) # P(Loan = 1)
+p3
+```
+
+```{r}
+p4 <- sum(pivottable_loan_cc["0","1"]) / sum(pivottable_loan_cc["0",]) # P(CC = 1 Loan = 0)
+p4
+```
+
+```{r}
+p5 <- sum(pivottable_loan_online["0","1"]) / sum(pivottable_loan_online["0" ,]) # P(Online = 1  Loan = 0)
+p5
+```
+
+```{r}
+p6 <- sum(pivottable_loan_online["0" ,]) / sum(pivottable_loan_online)  # P(Loan = 0)
+p6
+```
+
+```{r}
+library(e1071)
+```
+
+```{r}
+nb_prob <- (p1 * p2) / p5 # Naive Bayes Probability P(Loan = 1  CC = 1   Online = 1)
+nb_prob
+```
+
+When comparing the probability from the Naive Bayes and the pivot table of part B the more accurate estimate is likely from the pivot table. Based on the video lecture "Naive Bayes Classifier" by Dr.Wu it discusses that with NB there is an assumption of conditional independence but in this scenario the probabilities are based on the dependency of the needed variables.
+
+```{r}
+nb_model <-naiveBayes(`Personal Loan`~Online+CreditCard,data = Train)  # Naive Bayes model on training data
+nb_model
+```
+
+
+
+
+
