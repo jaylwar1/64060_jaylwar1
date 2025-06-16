@@ -1,0 +1,79 @@
+---
+title: "Assignment 4"
+author: "Jacob Aylward"
+date: "2025-06-16"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+
+
+```{r}
+library(readr)
+Pharmaceuticals <- read_csv("C:/Users/jacob/Downloads/Pharmaceuticals.csv")
+View(Pharmaceuticals)
+```
+```{r}
+library(tidyverse)
+library(factoextra)
+```
+
+```{r}
+set.seed(123)
+PH<- Pharmaceuticals[,c(3:11)]
+summary(PH)
+```
+
+
+```{r}
+set.seed(123)
+PH<- Pharmaceuticals[,c(3:11)]
+PH <- scale(PH)
+fviz_nbclust(PH, kmeans, method = "wss") # Determining the optimal number for K
+```
+
+```{r}
+fviz_nbclust(PH, kmeans, method = "silhouette") # # Determining the optimal number for K
+```
+
+```{r}
+PH <- scale(PH)
+distance <- get_dist(PH)
+fviz_dist(distance)
+```
+
+```{r}
+k5 <- kmeans(PH, centers = 5, nstart = 25) # chose K=5 based on the fviz_nbclust graph above
+
+centers <- k5$centers 
+
+k5$size 
+
+k5$cluster[120] 
+
+fviz_cluster(k5, data = PH) 
+```
+A. To properly cluster the 21 firms based on the variables given the clustering algorithim used was the Euclidean distance as it is the defualt distance metric used and becuase of the simplicity it offers. Additionally, since there were no major outliers in these variables there was no concern for senesitivity issues to them. Based on the fviz_nbclust graph above this is how the amount of clusters (k=5) was determined. Variables that likely had the most impact include market cap and revenue growth.
+
+
+B. Cluster 4 has the most variability within it due to having 8 firms as part of it with ranging values in variables such as market cap or net profit margin. Due to cluster 1 having only two firms as part of it there is a variable that has them seperated in terms of distance from the other variables that are closer to the middle of the plotting graph.
+
+
+C. One pattern that was observed with respect to the variables not used in forming the clusters was that each cluster has at least 1 firm that is not in the U.S. In cluster 1 there is a firm in Canada, cluster 2 has a firm in Germany, cluster 3 has a firm in Ireland and in France, cluster 4 has two firms in the UK and one in Switzerland, and cluster 5 has a firm in the UK.
+
+
+D. 
+Cluster 1: Low ROA  
+Cluster 2: Low Market Capitalization
+Cluster 3: High Estimated Revenue Growth
+Cluster 4: High Net Profit Margin
+Cluster 5: High Market Capitalization
+
+
+
+
+
+
+
