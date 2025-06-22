@@ -1,0 +1,88 @@
+---
+title: "Assignment 5"
+author: "Jacob Aylward"
+date: "2025-06-22"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+```
+
+
+```{r}
+library(readr)
+Cereals <- read_csv("C:/Users/jacob/Downloads/Cereals.csv")
+View(Cereals)
+```
+
+```{r}
+Cereals <- na.omit(Cereals)
+```
+
+```{r}
+head(Cereals)
+```
+
+```{r}
+Cereals.nm <- Cereals %>% select(where(is.numeric))
+```
+
+```{r}
+Cereals.norm <- dist(Cereals.nm, method = "euclidean")
+```
+
+
+```{r}
+Cereals.scaled <- scale(Cereals.norm)
+```
+
+```{r}
+library(cluster)
+```
+
+
+```{r}
+sin. <- agnes(Cereals.norm, method = "single")
+comp. <- agnes(Cereals.norm, method = "complete")
+avg. <- agnes(Cereals.norm, method = "average")
+ward. <- agnes(Cereals.norm, method = "ward")
+```
+
+```{r}
+plot(sin., hang = -1, ann = FALSE)
+plot(comp., hang = -1, ann = FALSE)
+plot(avg., hang = -1, ann = FALSE)
+plot(ward., hang = -1, ann = FALSE)
+```
+
+```{r}
+print(sin.$ac)
+print(comp.$ac)
+print(avg.$ac)
+print(ward.$ac)
+```
+Best method is Ward based on the values given above
+Based on the cluster dendrogram for Ward, I would select 3 clusters (k = 3)
+
+
+Based on the clusters for the Ward dendrogram the cluster that offers potentially the most "balanced" cereals would be cluster 3 (far right section). With cluster 2 due to the high values for some these are likely to be the least healthy cereals and should be avoided. With the stability of these clusters determining the best cereals or cluster that offers the best will require focus to be on determining which clusters have cereals with the lowest amounts of harmful substances such as too much sugar or sodium
+
+
+
+
+
+The elementary public schools would like to choose a set of cereals to include in their
+daily cafeterias. Every day a different cereal is offered, but all cereals should support a
+healthy diet. For this goal, you are requested to find a cluster of “healthy cereals.”
+Should the data be normalized? If not, how should they be used in the cluster analysis?
+
+Yes, the data should be normalized due to the high ranges of values in columns such as calories, fiber, and sugar. The larger values of the "unhealthy" variables will ruin the clusters causing cereals to be chosen that are unhealthy. When the data clusters are normalized the healthy cereal options can be chosen from the clusters based on required features such as having low sugar.
+
