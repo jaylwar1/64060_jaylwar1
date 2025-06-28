@@ -1,0 +1,99 @@
+---
+title: "Final Exam"
+author: "Jacob Aylward"
+date: "2025-06-27"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r}
+library(readr)
+data<- read_csv("C:/Users/jacob/Downloads/out_eia923__fuel_receipts_costs-2.csv")
+View(data)
+```
+
+```{r}
+library(tidyverse)
+library(factoextra)
+```
+
+```{r}
+Data <- na.omit(data)
+str(Data)
+```
+
+```{r}
+Data_New <- Data[, !(names(Data) %in%c("mercury_content_ppm","natural_gas_delivery_contract_type_code","moisture_content_pct","chlorine_content_ppm","mine_id_msha"))]
+str(Data_New)
+```
+
+
+```{r}
+sample_data <- round(0.02 * nrow(Data_New))
+sample. <-sample(1:nrow(Data_New), size = sample_data, replace =FALSE)
+new_sample <- Data_New[sample.,]
+str(new_sample)
+```
+From the 2% sample of data what is the most common fuel type used? 
+```{r}
+table(new_sample$fuel_group_code)
+```
+Does the average amount of fuel recieved units for each type support natural gas being the most commonly used? If not what are some assumptions that can be made?
+
+```{r}
+aggregate(fuel_received_units ~ fuel_group_code, data = new_sample, FUN = mean, na.rm = TRUE)
+```
+
+
+
+
+What are the clusters like for fuel_received_units  and fuel_mmbtu_per_unit and what can this tell us based on the units received and fuel in each unit?
+Finding clusters based on fuel_received_units and fuel_mmbtu_per_unit
+(units received and fuel in each unit)
+The number of clusters is determined based on k-means 
+```{r}
+set.seed(1738)
+SD <- new_sample[,c(15,16)]
+SD <- scale(SD)
+fviz_nbclust(SD, kmeans, method = "silhouette")
+```
+
+```{r}
+fviz_nbclust(SD, kmeans, method = "wss")
+```
+
+```{r}
+k4 <- kmeans(SD, centers = 4, nstart = 25)
+centers <- k4$centers
+k4$size
+```
+
+```{r}
+fviz_cluster(k4, data = SD)
+```
+From these clusters we find:
+
+Cluster 1 represents fuel orders received that have the most fuel per unit based on the units received indicating that the most value may be gained from orders within this cluster.
+
+Cluster 2 represents a large variety of fuel units ordered but with a common variable of being below positive value in terms of the fuel received in each unit. Specifically, fuel received units of 10 or more have very little value gained in terms of fuel per unit indicating that the overall cost paid for the units is not likely to be worth the value.
+
+
+Cluster 3 represents fuel units received with the worst value of fuel per unit based on the units received. By having a limited amount of fuel per unit with minimal units being ordered there is not much value gained per unit.
+
+Cluster 4 represents a mixed value of fuel per unit with small amounts of units received. For any orders that have a positive value for fuel received per unit likely gains value due to small amount of units ordered but any orders with a negative value for fuel do not gain much value.
+
+
+What this data shows: 
+
+“Other Gases” likely has many units within Cluster 2 due to being the most units received on average but being the lowest form of fuel used. Due to Cluster 2 having many negative values of fuel per unit it likely means more units are needed per order to meet demand leading to having the highest average 
+
+Petroleum may have many orders in Cluster 1 due to being the lowest units received on average but being the 3rd most used fuel form. Meaning the orders that are created have positive value of fuel per unit leading to less units being needed. 
+
+Natural Gas likely has many orders in Cluster 4 and a good portion of Cluster 1 to support being the most used fuel form but also having the 2nd highest units received on average. Meaning more value of fuel per unit is gained in some orders compared to others.
+
+
+
+
+
+
